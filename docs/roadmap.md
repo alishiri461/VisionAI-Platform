@@ -7,7 +7,7 @@ This roadmap tracks intended delivery, not a claim that every listed capability 
 | 0 | Repository foundation, architecture, engineering instructions and contracts | Initial foundation added | Reviewed architecture/contracts, documented constraints, CI baseline |
 | 1 | API/web vertical slice, upload and basic image analysis | Implemented initial slice; CI green on recorded PR head | Backend tests, Ruff, frontend production build |
 | 2 | Harden image ingestion, decoded dimensions/pixel limits, expanded OpenCV operations and export | Image byte/dimension/pixel limits and bounded processing concurrency implemented; further deployment-level controls remain | Unit/API boundary tests, malformed media tests, deployment request/concurrency limits |
-| 3 | Concrete object-detection adapter and model lifecycle | Planned; only domain-level contracts exist | At least one documented runtime adapter, reproducible model artifact setup, inference tests |
+| 3 | Product-grade object detection capability: model/runtime selection, artifact manifest, lifecycle, bounded inference, stable API and result visualization | Architecture documented and approved; implementation not started; only domain-level contracts exist | Target hardware/workload decision record, licensed immutable model artifact, concrete adapter, lifecycle/readiness tests, detection API contract tests, representative quality and hardware benchmark evidence |
 | 4 | Video decoding, batch processing and tracking | Planned | Bounded batch/resource model, video fixtures, deterministic tracking contracts/tests |
 | 5 | Camera sessions, bounded frame buffers and real-time transport | Planned | Explicit media transport, backpressure/drop policy, session lifecycle and load evidence |
 | 6 | Segmentation, OCR and anomaly detection | Planned | Independent capability contracts, concrete adapters, accuracy/latency evaluation |
@@ -26,4 +26,4 @@ This roadmap tracks intended delivery, not a claim that every listed capability 
 1. Verify image ingestion boundary tests and CI against the current PR head.
 2. Add reverse-proxy/server request-body limits and deployment-wide concurrency controls in the chosen deployment profile.
 3. Add observability for rejected uploads, processing wait time, decode failures, and processing latency.
-4. Implement a concrete object-detection adapter only after model/runtime selection, artifact licensing, input preprocessing, and output-coordinate conventions are documented.
+4. Execute Detection Phase A in [Object Detection Engine architecture](architecture/object-detection-engine.md): inspect the existing detector port, collect target hardware/workload/object-taxonomy requirements, complete model/license evaluation, and prepare a reproducible benchmark before selecting a runtime or implementing inference.
