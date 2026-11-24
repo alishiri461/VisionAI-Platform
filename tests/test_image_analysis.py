@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import pytest
-
 from visionai.services.image_analysis import analyze_image, decode_image
 
 
