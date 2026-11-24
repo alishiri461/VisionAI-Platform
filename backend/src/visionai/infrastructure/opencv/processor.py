@@ -37,7 +37,13 @@ class OpenCvImageProcessor:
                 source.verify()
         except ImageLimitExceededError:
             raise
-        except (UnidentifiedImageError, OSError, SyntaxError, ValueError, Image.DecompressionBombError):
+        except (
+            UnidentifiedImageError,
+            OSError,
+            SyntaxError,
+            ValueError,
+            Image.DecompressionBombError,
+        ):
             return None
 
         pixels = cv2.imdecode(np.frombuffer(content, dtype=np.uint8), cv2.IMREAD_COLOR)
