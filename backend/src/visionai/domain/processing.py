@@ -1,15 +1,16 @@
+"""Framework-neutral processing lifecycle contracts."""
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any
+from typing import Mapping
 
-import numpy as np
+from visionai.domain.image import ImageFrame
 
 
-@dataclass(slots=True)
+@dataclass(frozen=True, slots=True)
 class ProcessingResult:
     success: bool
-    data: Any
-    metadata: dict[str, Any]
+    data: object
+    metadata: Mapping[str, object]
     error: str | None = None
 
 
@@ -21,8 +22,8 @@ class ProcessingEngine(ABC):
         """Load resources required by the engine."""
 
     @abstractmethod
-    def process(self, image: np.ndarray) -> ProcessingResult:
-        """Process one decoded BGR image."""
+    def process(self, image: ImageFrame) -> ProcessingResult:
+        """Process one decoded image with explicit color semantics."""
 
     @abstractmethod
     def dispose(self) -> None:
