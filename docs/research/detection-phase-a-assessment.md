@@ -340,9 +340,9 @@ The user supplied the following Task Manager inventory on 2026-11-24. This is re
 | NVIDIA driver | Windows display-driver version 32.0.15.7628; dated 2025-04-27 | Exact NVIDIA package version and CUDA compatibility must be confirmed from `nvidia-smi` or NVIDIA Control Panel |
 | Storage | Samsung SSD 980, nominal 500 GB (466 GB formatted) | Free space was not supplied; reserve model/artifact and benchmark-output capacity explicitly |
 | Graphics API | DirectX 12, Feature Level 12.1 | Does not establish installed CUDA Toolkit/cuDNN versions |
-| OS | Not supplied | Blocking input for pinning supported runtime/package versions |
+| OS | Windows 10 Enterprise LTSC 21H2, OS build 19044.1288 | Windows target is now identified; exact support must still be checked against the chosen CUDA/ORT/PyTorch/OpenVINO release matrices |
 
-The machine is a credible candidate for initial CPU-versus-NVIDIA-GPU inference benchmarking. The 8 GB VRAM capacity makes model size, input resolution, precision, batch size and concurrent inference important measured constraints. No FPS, latency, throughput or maximum concurrency is inferred from the inventory.
+The machine is a credible candidate for initial CPU-versus-NVIDIA-GPU inference benchmarking. The 8 GB VRAM capacity makes model size, input resolution, precision, batch size and concurrent inference important measured constraints. No FPS, latency, throughput or maximum concurrency is inferred from the inventory. The supplied Windows display-driver version is retained exactly as reported; it has not been converted to an NVIDIA package release number because that mapping has not yet been verified from `nvidia-smi` or the NVIDIA driver package.
 
 ### 11.2 Initial benchmark tracks for this hardware
 
@@ -360,9 +360,8 @@ TensorRT remains an optional optimization track after a baseline has been measur
 
 The following values remain unknown and must not be inferred:
 
-- Deployment OS and exact version/build.
 - Whether this computer is the final production host, a development workstation, or a benchmark-only machine.
-- Exact NVIDIA driver package version, CUDA availability and installed CUDA/cuDNN versions (if installed).
+- Exact NVIDIA driver package version as reported by `nvidia-smi`, CUDA availability and installed CUDA/cuDNN versions (if installed).
 - Free SSD capacity and storage budget for model artifacts, datasets and benchmark outputs.
 - Whether deployment is on-premises, cloud, edge or mixed.
 - Typical and maximum input image width/height.
