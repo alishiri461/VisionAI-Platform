@@ -50,6 +50,10 @@ At the time this prompt was introduced, the repository contains an initial found
 - Image upload endpoint at `POST /api/v1/images/analyze`.
 - Accepted declared media types: JPEG, PNG, and WebP.
 - Configurable upload byte limit through `VISIONAI_MAX_UPLOAD_BYTES` (default 10 MiB).
+- Pillow header/format inspection before OpenCV decode, including actual-format versus declared-MIME matching.
+- Configurable decoded width, height, and total-pixel limits (defaults: 8000 × 8000 maximum dimensions and 12,000,000 total pixels), in addition to the 10 MiB upload-byte limit.
+- Per-process image-processing concurrency limit of two in-flight operations; decode/analysis are offloaded from the ASGI event loop.
+- Float32 Laplacian intermediate to reduce temporary memory versus float64.
 - OpenCV decoding and deterministic basic metrics: dimensions, channel count, grayscale mean, Laplacian variance, and 16-bin BGR histograms.
 - React + TypeScript + Vite browser client for image upload/preview and result presentation.
 - Initial pytest coverage for image decode and analysis.
@@ -124,7 +128,10 @@ For image ingestion:
 - Enforce byte limits while reading the stream, not only after buffering the whole upload.
 - Validate declared content type as an early filter, but do not trust it as proof of file format.
 - Decode actual bytes and reject malformed or unsupported content.
-- Add decoded width, height, total-pixel, channel, and decompression/resource limits before public exposure.
+- Enforce configured decoded width, height, and total-pixel limits using a header inspection step before OpenCV allocates the decoded pixel buffer.
+- Verify actual image format against the declared JPEG/PNG/WebP media type.
+- Bound concurrent image decode/analysis operations per process and keep CPU-heavy work off the ASGI event loop.
+- Treat application-level limits as one layer: configure reverse-proxy/server body limits and deployment-wide concurrency controls as well.
 - Avoid trusting filenames or using them as storage paths.
 - Ensure temporary files and buffers are cleaned up on success, failure, and cancellation.
 - Return stable, non-sensitive error responses.
@@ -155,7 +162,7 @@ For model execution:
 - Use deterministic image-processing functions where possible.
 - Do not add a database, queue, cache, or model runtime until a use case requires it.
 - Keep dependencies minimal; optional model runtimes should be extras or separate deployment profiles when appropriate.
-- Add tests for invalid media, incorrect content type, oversize streams, malformed decode, image dimension limits, processing exceptions, and API response contracts.
+- Add tests for invalid media, incorrect content type, oversize streams, malformed decode, width/height/pixel limits, exact-boundary acceptance, processing exceptions, and API response contracts.
 
 ## 7. Frontend engineering standards
 
