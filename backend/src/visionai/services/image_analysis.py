@@ -4,8 +4,9 @@ from io import BytesIO
 import numpy as np
 from PIL import Image
 
+from visionai.application.use_cases.analyze_image import ImageLimitExceededError
 from visionai.domain.image import ColorOrder, ImageFrame
-from visionai.infrastructure.opencv.processor import ImageLimitExceededError, OpenCvImageProcessor
+from visionai.infrastructure.opencv.processor import OpenCvImageProcessor
 
 _processor = OpenCvImageProcessor()
 
