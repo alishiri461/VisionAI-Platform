@@ -40,6 +40,11 @@ def test_decode_image_enforces_maximum_width_before_decode() -> None:
         decode_image(encode_png(16, 12), max_width=15)
 
 
+def test_decode_image_enforces_maximum_height_before_decode() -> None:
+    with pytest.raises(ImageLimitExceededError, match="configured processing limits"):
+        decode_image(encode_png(16, 12), max_height=11)
+
+
 def test_decode_image_enforces_total_pixel_limit() -> None:
     with pytest.raises(ImageLimitExceededError, match="configured processing limits"):
         decode_image(encode_png(16, 12), max_pixels=191)
