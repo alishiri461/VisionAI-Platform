@@ -28,3 +28,14 @@ WebSocket is intended for session control and metadata. WebRTC or another media 
 
 ## Security
 Treat uploads as untrusted. Validate declared media type, inspect actual format, enforce byte and decoded-pixel/dimension limits before OpenCV allocation, and return stable errors. Do not trust filenames or persist uploads without an explicit storage and tenant-isolation design. Treat imported model files as untrusted artifacts.
+
+
+## Object Detection Engine — approved target design
+
+The product-level design authority for the first concrete detection capability is [Object Detection Engine — Product Architecture](object-detection-engine.md).
+
+The target remains a model/runtime-neutral capability inside this modular monolith. The application and public API depend on stable detection contracts; concrete runtimes are isolated behind infrastructure adapters. The design defines original-image pixel coordinates, deterministic result ordering, immutable model specifications, artifact integrity checks, explicit model lifecycle/readiness, bounded inference admission, safe error mapping, frontend overlay behavior, adapter contract tests, and production acceptance gates.
+
+The initial API target is POST /api/v1/detections. It must reuse the hardened image-ingestion path and must not change POST /api/v1/images/analyze. A concrete model/runtime has deliberately not been selected: hardware, workload, object taxonomy, quality targets, license and latency requirements must be collected and benchmarked first.
+
+**Status:** architecture approved and documented; concrete model adapter, model artifact, lifecycle manager, detection endpoint and real detection UI remain unimplemented.
