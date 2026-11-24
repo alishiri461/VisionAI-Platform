@@ -1,6 +1,15 @@
 # VisionAI Platform
 
-A modular computer-vision web platform built with Python, FastAPI, OpenCV and React. This repository starts with a working-scope foundation: image upload, safe decoding, basic image metrics and a browser client.
+A modular computer-vision web platform built with Python, FastAPI, OpenCV and React. The current repository provides an initial foundation and image-analysis vertical slice: image upload, safe decoding, deterministic basic metrics and a browser client.
+
+## Project governance
+
+- Canonical engineering instructions: [AGENTS.md](../AGENTS.md)
+- Master engineering prompt: [docs/MASTER_PROMPT.md](docs/MASTER_PROMPT.md)
+- Architecture: [docs/architecture/overview.md](docs/architecture/overview.md)
+- Delivery roadmap: [docs/roadmap.md](docs/roadmap.md)
+
+All work must follow the master prompt's evidence-based workflow, branch protections, security/resource limits, quality gates, and definition of done.
 
 ## Current implementation
 
@@ -9,9 +18,10 @@ A modular computer-vision web platform built with Python, FastAPI, OpenCV and Re
 - OpenCV decoding and basic image metrics (dimensions, grayscale mean, Laplacian sharpness and color histograms).
 - React + TypeScript + Vite client.
 - Unit tests for image-processing functions.
-- Architecture overview and phased roadmap.
+- Domain contracts for pluggable processing and object detection; these are interfaces, not concrete inference implementations.
+- Architecture overview, roadmap, and CI workflow.
 
-Object detection, tracking, segmentation, OCR, video analytics, camera streaming, authentication, persistence, queues and production monitoring are **not implemented yet**.
+Object detection inference, tracking, segmentation, OCR, video analytics, camera streaming, authentication, persistence, queues and production monitoring are **not implemented yet**.
 
 ## Requirements
 
@@ -40,10 +50,18 @@ npm run dev
 
 The client defaults to http://127.0.0.1:8000. Set `VITE_API_BASE_URL` in `frontend/.env.local` to override it.
 
-## Tests
+## Tests and quality checks
 
 ```bash
 pytest
+ruff check backend/src tests
+```
+
+Frontend production build:
+
+```bash
+cd frontend
+npm run build
 ```
 
 Configuration examples: `backend/.env.example` and `frontend/.env.example`.
