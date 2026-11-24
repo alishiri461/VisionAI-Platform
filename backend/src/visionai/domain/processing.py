@@ -1,7 +1,7 @@
 """Framework-neutral processing lifecycle contracts."""
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 from visionai.domain.image import ImageFrame
 
