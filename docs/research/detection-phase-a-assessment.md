@@ -399,3 +399,34 @@ The following vendor/project pages were consulted during this assessment. Their 
 **Reason:** Current target hardware, product taxonomy, workload, dataset and deployment/license posture are not specified. Choosing a model now would be an unsupported assumption.
 
 **Next phase:** Once target hardware and product constraints are supplied, freeze the benchmark matrix, obtain approved artifacts, run baseline correctness/performance tests, and issue a separate model/runtime selection ADR. Only then implement the first concrete adapter.
+
+
+### 11.4 Python and PyTorch environment probe (2026-11-24)
+
+The user ran the following commands in Windows CMD and supplied the exact output:
+
+```text
+C:\Windows\system32>python --version
+Python 3.10.7
+
+C:\Windows\system32>python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('CUDA build:', torch.version.cuda)"
+PyTorch: 2.14.1+cpu
+CUDA available: False
+CUDA build: None
+```
+
+Confirmed interpretation:
+
+- Python 3.10.7 is available through the current CMD environment.
+- PyTorch 2.14.1 is installed as a CPU-only build (`+cpu`).
+- This PyTorch build has no CUDA build identifier (`torch.version.cuda is None`) and reports CUDA unavailable.
+- Therefore, **the currently imported PyTorch installation cannot run inference on the RTX 3060 Ti**. This is an installed-package/build limitation; it does not establish that the NVIDIA GPU or driver is defective.
+- This probe does not establish whether the CUDA Toolkit, CUDA runtime libraries, or cuDNN are installed separately, nor whether another Python environment contains a CUDA-enabled PyTorch build.
+- The installed PyTorch version string is recorded as reported by the environment; do not infer official wheel availability or Windows/Python compatibility from the version string alone.
+
+Operational decision:
+
+- Do not use the current PyTorch installation for GPU benchmark results.
+- Do not install or upgrade CUDA, cuDNN, PyTorch or ONNX Runtime yet.
+- Before selecting an installation matrix, identify the active Python executable/environment and inspect the installed package location, then check the exact supported Windows/Python/CUDA/cuDNN combinations from the official release compatibility matrices.
+- Keep a CPU reference benchmark available; GPU benchmarking remains blocked until a compatible GPU-enabled runtime is deliberately installed and verified.
