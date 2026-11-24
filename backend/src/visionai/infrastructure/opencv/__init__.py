@@ -1,0 +1,1 @@
+"""OpenCV/Pillow infrastructure adapters."""
