@@ -1,48 +1,56 @@
 # VisionAI Platform
 
-A modular computer-vision web platform built with Python, FastAPI, OpenCV and React. The current repository provides an initial foundation and image-analysis vertical slice: image upload, safe decoding, deterministic basic metrics and a browser client.
+A modular computer-vision platform built with Python, FastAPI, OpenCV and React. The repository currently delivers a hardened image-analysis vertical slice and a layered backend foundation with explicit application ports and infrastructure adapters.
 
-## Project governance
+## Engineering governance
 
-- Canonical engineering instructions: [AGENTS.md](AGENTS.md)
-- Master engineering prompt: [docs/MASTER_PROMPT.md](docs/MASTER_PROMPT.md)
-- Architecture: [docs/architecture/overview.md](docs/architecture/overview.md)
-- Object Detection Engine product architecture: [docs/architecture/object-detection-engine.md](docs/architecture/object-detection-engine.md)
-- Detection Phase A technical assessment and benchmark plan: [docs/research/detection-phase-a-assessment.md](docs/research/detection-phase-a-assessment.md)
-- Delivery roadmap: [docs/roadmap.md](docs/roadmap.md)
+- [AGENTS.md](AGENTS.md): mandatory repository rules.
+- [Master engineering prompt](docs/MASTER_PROMPT.md)
+- [Architecture overview](docs/architecture/overview.md)
+- [Object Detection Engine architecture](docs/architecture/object-detection-engine.md)
+- [Detection Phase A assessment](docs/research/detection-phase-a-assessment.md)
+- [Roadmap](docs/roadmap.md)
 
-All work must follow the master prompt's evidence-based workflow, branch protections, security/resource limits, quality gates, and definition of done.
+All changes must be evidence-based, tested, documented and delivered through an independent branch and pull request. Do not commit directly to main.
 
-## Current implementation
+## Implemented
 
-- FastAPI application with versioned routes and liveness endpoint.
-- JPEG/PNG/WebP upload validation and configured byte-size limit.
-- OpenCV decoding and basic image metrics (dimensions, grayscale mean, Laplacian sharpness and color histograms).
-- React + TypeScript + Vite client.
-- Unit tests for image-processing functions.
-- Domain contracts for pluggable processing and object detection; these are interfaces, not concrete inference implementations.
-- Architecture overview, roadmap, and CI workflow.
+- FastAPI application, versioned image-analysis API and liveness endpoint.
+- JPEG, PNG and WebP format verification, upload-byte limit, decoded dimension/pixel limits.
+- Pillow/OpenCV infrastructure adapter with explicit BGR image-frame semantics.
+- Application use case and ports separated from the concrete OpenCV implementation.
+- Basic image metrics: dimensions, grayscale mean, Laplacian sharpness and 16-bin BGR histograms.
+- React/TypeScript/Vite client for upload, preview and analysis-result visualization.
+- Unit, API and architecture-boundary tests.
+- CI backend matrix for Python 3.10 and 3.12, plus frontend production build.
 
-Object detection inference, tracking, segmentation, OCR, video analytics, camera streaming, authentication, persistence, queues and production monitoring are **not implemented yet**.
+## Not implemented
+
+Concrete object-detection inference, model artifacts, model lifecycle/readiness, segmentation, tracking, OCR, video/camera processing, authentication, persistence, job queues, multi-tenancy, production observability and deployment profiles are not implemented. Domain protocols and architecture documents are not executable model capabilities.
+
+No production model/runtime is selected. See the Phase A assessment for the remaining hardware, taxonomy, workload, dataset and licensing gates. No model weights are stored in Git.
 
 ## Requirements
 
-Python 3.12+, Node.js 20+, npm.
+Python 3.10+ and Node.js 20+.
 
-## Backend
+## Backend setup
+
+From the repository root:
 
 ```bash
 python -m venv .venv
-# Windows: .venv\\Scripts\\activate
+# Windows CMD: .venv\\Scripts\\activate.bat
+# PowerShell: .venv\\Scripts\\Activate.ps1
 # Linux/macOS: source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install -e "backend[dev]"
+python -m pip install -e "backend[dev]"
 uvicorn visionai.main:app --app-dir backend/src --reload
 ```
 
-API docs: http://127.0.0.1:8000/docs
+API documentation: http://127.0.0.1:8000/docs
 
-## Frontend
+## Frontend setup
 
 ```bash
 cd frontend
@@ -50,9 +58,11 @@ npm install
 npm run dev
 ```
 
-The client defaults to http://127.0.0.1:8000. Set `VITE_API_BASE_URL` in `frontend/.env.local` to override it.
+The default API base URL is http://127.0.0.1:8000. Override it with VITE_API_BASE_URL in frontend/.env.local.
 
-## Tests and quality checks
+## Validation
+
+From repository root:
 
 ```bash
 pytest
@@ -66,6 +76,8 @@ cd frontend
 npm run build
 ```
 
-Configuration examples: `backend/.env.example` and `frontend/.env.example`. Image limits default to 8000 px per dimension and 12,000,000 total pixels; override with `VISIONAI_MAX_IMAGE_WIDTH`, `VISIONAI_MAX_IMAGE_HEIGHT`, and `VISIONAI_MAX_IMAGE_PIXELS`.
+## Configuration
 
-No license has been selected. Until one is added, treat the repository as all-rights-reserved.
+Copy backend/.env.example to backend/.env and adjust VISIONAI_* settings. Defaults cap uploads at 10 MiB, width/height at 8000 px and total pixels at 12,000,000. Application-level controls do not replace reverse-proxy request-body limits or deployment-wide concurrency controls.
+
+No license has been selected. Until one is explicitly added, treat this repository as all-rights-reserved.
