@@ -326,14 +326,44 @@ Phase A is complete when all of the following are true:
 9. Hard-gate failures and decision owners are explicit.
 10. A model/runtime selection decision record is approved before Phase B implementation.
 
-## 11. Inputs required from product/operations
+## 11. Target hardware profile and remaining product inputs
 
-The following values are not available in the inspected VisionAI repository and must not be inferred from unrelated projects:
+### 11.1 Hardware supplied for initial evaluation
 
-- Deployment OS and version.
-- CPU model and physical/logical core count.
-- GPU model, VRAM, driver and supported CUDA/DirectML/OpenVINO stack, if any.
-- Host RAM and storage available to model artifacts.
+The user supplied the following Task Manager inventory on 2026-11-24. This is recorded as the **initial target/evaluation machine**, not as proof that it is the final production deployment host.
+
+| Component | Supplied value | Assessment note |
+|---|---|---|
+| CPU | 12th Gen Intel Core i7-12700K | 12 physical cores / 20 logical processors |
+| RAM | 32 GB DDR4, reported speed 2133 MHz | Adequate for initial single-model evaluation; concurrency headroom must be measured |
+| GPU | NVIDIA GeForce RTX 3060 Ti | 8 GB dedicated VRAM |
+| NVIDIA driver | Windows display-driver version 32.0.15.7628; dated 2025-04-27 | Exact NVIDIA package version and CUDA compatibility must be confirmed from `nvidia-smi` or NVIDIA Control Panel |
+| Storage | Samsung SSD 980, nominal 500 GB (466 GB formatted) | Free space was not supplied; reserve model/artifact and benchmark-output capacity explicitly |
+| Graphics API | DirectX 12, Feature Level 12.1 | Does not establish installed CUDA Toolkit/cuDNN versions |
+| OS | Not supplied | Blocking input for pinning supported runtime/package versions |
+
+The machine is a credible candidate for initial CPU-versus-NVIDIA-GPU inference benchmarking. The 8 GB VRAM capacity makes model size, input resolution, precision, batch size and concurrent inference important measured constraints. No FPS, latency, throughput or maximum concurrency is inferred from the inventory.
+
+### 11.2 Initial benchmark tracks for this hardware
+
+Subject to OS and driver verification, the first controlled benchmark should compare:
+
+1. Candidate model's native PyTorch implementation on CPU as a correctness/reference path.
+2. The same model on PyTorch with NVIDIA CUDA, where the exact PyTorch build supports the installed driver/runtime.
+3. The same exported ONNX artifact on ONNX Runtime CPU.
+4. The same exported ONNX artifact on ONNX Runtime CUDA Execution Provider, after matching its CUDA and cuDNN requirements.
+5. OpenVINO CPU as an optional Intel CPU comparison after confirming the OS/package support for the selected OpenVINO release.
+
+TensorRT remains an optional optimization track after a baseline has been measured. Do not add CUDA, cuDNN, PyTorch, ONNX Runtime GPU or TensorRT dependencies to the base application until the exact OS, package versions and deployment requirements are pinned.
+
+### 11.3 Inputs still required from product/operations
+
+The following values remain unknown and must not be inferred:
+
+- Deployment OS and exact version/build.
+- Whether this computer is the final production host, a development workstation, or a benchmark-only machine.
+- Exact NVIDIA driver package version, CUDA availability and installed CUDA/cuDNN versions (if installed).
+- Free SSD capacity and storage budget for model artifacts, datasets and benchmark outputs.
 - Whether deployment is on-premises, cloud, edge or mixed.
 - Typical and maximum input image width/height.
 - Expected concurrent requests and peak requests/second.
