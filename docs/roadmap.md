@@ -4,9 +4,9 @@ This roadmap tracks intended delivery, not a claim that every listed capability 
 
 | Phase | Scope | Status | Exit evidence |
 |---|---|---|---|
-| 0 | Repository foundation, architecture, engineering instructions and contracts | Initial foundation added; governance documentation being established | Reviewed architecture/contracts, documented constraints, CI baseline |
-| 1 | API/web vertical slice, upload and basic image analysis | Initial slice added; CI verification has a known Ruff failure at the inspected baseline | Backend tests, Ruff, frontend production build, upload boundary/API tests |
-| 2 | Harden image ingestion, decoded dimensions/pixel limits, expanded OpenCV operations and export | Planned | Byte and decoded-pixel limits, malformed/oversize tests, stable API behavior |
+| 0 | Repository foundation, architecture, engineering instructions and contracts | Initial foundation added | Reviewed architecture/contracts, documented constraints, CI baseline |
+| 1 | API/web vertical slice, upload and basic image analysis | Implemented initial slice; CI green on recorded PR head | Backend tests, Ruff, frontend production build |
+| 2 | Harden image ingestion, decoded dimensions/pixel limits, expanded OpenCV operations and export | Image byte/dimension/pixel limits and bounded processing concurrency implemented; further deployment-level controls remain | Unit/API boundary tests, malformed media tests, deployment request/concurrency limits |
 | 3 | Concrete object-detection adapter and model lifecycle | Planned; only domain-level contracts exist | At least one documented runtime adapter, reproducible model artifact setup, inference tests |
 | 4 | Video decoding, batch processing and tracking | Planned | Bounded batch/resource model, video fixtures, deterministic tracking contracts/tests |
 | 5 | Camera sessions, bounded frame buffers and real-time transport | Planned | Explicit media transport, backpressure/drop policy, session lifecycle and load evidence |
@@ -23,7 +23,7 @@ This roadmap tracks intended delivery, not a claim that every listed capability 
 
 ## Immediate next work
 
-1. Resolve the existing Ruff findings in the initial PR and verify the exact new head commit through GitHub Actions.
-2. Add image decoded-dimension and pixel-count limits with boundary tests before exposing image upload to untrusted public traffic.
-3. Stabilize image API contracts and error behavior.
+1. Verify image ingestion boundary tests and CI against the current PR head.
+2. Add reverse-proxy/server request-body limits and deployment-wide concurrency controls in the chosen deployment profile.
+3. Add observability for rejected uploads, processing wait time, decode failures, and processing latency.
 4. Implement a concrete object-detection adapter only after model/runtime selection, artifact licensing, input preprocessing, and output-coordinate conventions are documented.
