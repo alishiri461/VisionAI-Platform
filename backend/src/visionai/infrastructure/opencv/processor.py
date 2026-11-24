@@ -5,12 +5,8 @@ import cv2
 import numpy as np
 from PIL import Image, UnidentifiedImageError
 
+from visionai.application.use_cases.analyze_image import ImageLimitExceededError
 from visionai.domain.image import ColorOrder, ImageFrame
-
-
-class ImageLimitExceededError(ValueError):
-    """Raised when decoded image dimensions exceed configured resource limits."""
-
 
 _MIME_FORMATS = {"image/jpeg": "JPEG", "image/png": "PNG", "image/webp": "WEBP"}
 
