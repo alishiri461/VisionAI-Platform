@@ -1,41 +1,53 @@
 # Architecture Overview
 
 ## Architectural style
-The implementation is a modular monolith. Image-processing logic remains independent of FastAPI so future workers, CLI tools and transports can reuse it.
 
-## Logical boundaries
-- API: HTTP validation, serialization and transport.
-- Application: use-case orchestration.
-- Processing services: deterministic image operations and inference pipelines.
-- Model adapters (planned): stable interfaces around PyTorch and ONNX Runtime.
-- Infrastructure (planned): PostgreSQL, Redis, object storage and telemetry.
+VisionAI is a **modular monolith**. The backend separates domain contracts, application orchestration, infrastructure adapters and HTTP presentation. This provides explicit boundaries without introducing distributed-service complexity before workload evidence requires it.
 
-## Current vertical slice
-Browser upload -> bounded upload read -> declared MIME allow-list -> Pillow header/format inspection and dimension preflight -> OpenCV decode -> deterministic image metrics -> JSON response -> browser rendering.
+## Dependency direction
 
-## Image resource controls
-- Upload bytes are capped by VISIONAI_MAX_UPLOAD_BYTES (default 10 MiB).
-- Decoded width and height are capped independently by VISIONAI_MAX_IMAGE_WIDTH and VISIONAI_MAX_IMAGE_HEIGHT (defaults 8000 each).
-- Total decoded pixels are capped by VISIONAI_MAX_IMAGE_PIXELS (default 12,000,000).
-- The actual encoded format must match the declared JPEG/PNG/WebP media type.
-- Image decode and analysis execute off the event loop, with at most two in-flight image processing operations per application process.
-- Laplacian intermediate precision uses float32 to reduce temporary memory versus float64.
+```text
+HTTP Presentation -> Application Use Cases -> Domain Contracts
+                           |
+                           v
+                    Application Ports
+                           ^
+                           |
+                Infrastructure Adapters
+```
 
-These are configurable application-level limits. Reverse-proxy/server request limits and deployment-wide concurrency limits must also be configured for a production deployment.
+- **Domain:** framework-neutral value objects and business contracts. It must not import FastAPI, OpenCV, NumPy, Pillow, PyTorch or ONNX Runtime.
+- **Application:** use-case orchestration and ports. It must not import HTTP frameworks or concrete infrastructure adapters.
+- **Infrastructure:** concrete implementations for image decoding, CV runtimes, persistence and external systems.
+- **Presentation:** HTTP validation, request limits, response serialization and transport-specific error mapping.
+- **Frontend:** feature-oriented React UI; it communicates only through versioned API contracts.
+
+## Current image-analysis flow
+
+Browser upload -> FastAPI multipart boundary -> bounded byte read -> declared MIME allow-list -> application use case -> OpenCV/Pillow decoder adapter -> immutable ImageFrame with explicit BGR semantics -> analyzer adapter -> response schema -> browser visualization.
+
+The existing public endpoint remains POST /api/v1/images/analyze. The use case is runtime-neutral; OpenCV/Pillow are implementation details in infrastructure.
+
+## Resource controls
+
+- Upload bytes: VISIONAI_MAX_UPLOAD_BYTES (default 10 MiB).
+- Width and height: VISIONAI_MAX_IMAGE_WIDTH and VISIONAI_MAX_IMAGE_HEIGHT (default 8000 each).
+- Total decoded pixels: VISIONAI_MAX_IMAGE_PIXELS (default 12,000,000).
+- Image processing admission: at most two in-flight decode/analysis operations per application process.
+- CPU-bound decode and analysis execute outside the async event loop.
+
+These are application-process controls. Configure request-body limits at the reverse proxy/ASGI ingress and deployment-wide concurrency controls before public exposure.
+
+## Object Detection Engine
+
+The product-level design authority is [Object Detection Engine — Product Architecture](object-detection-engine.md). The target detection capability is model/runtime-neutral: application and API code depend on stable contracts; concrete PyTorch, ONNX Runtime, OpenVINO or TensorRT adapters remain infrastructure concerns.
+
+The initial endpoint target is POST /api/v1/detections and must reuse the hardened image-ingestion boundary without changing the existing image-analysis contract. A production model/runtime has not been selected. Hardware, workload, object taxonomy, dataset rights, quality targets and deployment/license posture must pass the Phase A decision gates before concrete inference is implemented.
 
 ## Real-time boundary
-WebSocket is intended for session control and metadata. WebRTC or another media transport is required for browser video; raw video frames should not be sent through an unbounded WebSocket queue.
+
+WebSocket is for session control and metadata, not an unbounded raw-frame transport. Browser video requires a deliberate media transport (for example WebRTC), bounded frame buffers, explicit backpressure/drop policy and session lifecycle.
 
 ## Security
-Treat uploads as untrusted. Validate declared media type, inspect actual format, enforce byte and decoded-pixel/dimension limits before OpenCV allocation, and return stable errors. Do not trust filenames or persist uploads without an explicit storage and tenant-isolation design. Treat imported model files as untrusted artifacts.
 
-
-## Object Detection Engine — approved target design
-
-The product-level design authority for the first concrete detection capability is [Object Detection Engine — Product Architecture](object-detection-engine.md).
-
-The target remains a model/runtime-neutral capability inside this modular monolith. The application and public API depend on stable detection contracts; concrete runtimes are isolated behind infrastructure adapters. The design defines original-image pixel coordinates, deterministic result ordering, immutable model specifications, artifact integrity checks, explicit model lifecycle/readiness, bounded inference admission, safe error mapping, frontend overlay behavior, adapter contract tests, and production acceptance gates.
-
-The initial API target is POST /api/v1/detections. It must reuse the hardened image-ingestion path and must not change POST /api/v1/images/analyze. A concrete model/runtime has deliberately not been selected: hardware, workload, object taxonomy, quality targets, license and latency requirements must be collected and benchmarked first.
-
-**Status:** architecture approved and documented; concrete model adapter, model artifact, lifecycle manager, detection endpoint and real detection UI remain unimplemented.
+Uploads are untrusted. Validate actual file format, declared MIME type, byte size and decoded dimensions before allocating image buffers. Do not trust filenames. Do not load arbitrary model URLs, Python pickles or user-supplied executable code. Model artifacts require provenance and SHA-256 verification. Persistence, authentication, tenant isolation and retention require explicit decisions before enabling storage of user images.
