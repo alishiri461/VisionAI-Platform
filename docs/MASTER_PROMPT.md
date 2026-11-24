@@ -297,7 +297,7 @@ For each new user request, follow this instruction:
 
 ## 15. Object Detection Engine — approved product architecture
 
-The canonical product-level design is [docs/architecture/object-detection-engine.md](architecture/object-detection-engine.md). Read it before changing object-detection contracts, model adapters, runtime dependencies, detection API behavior, or frontend result rendering.
+The canonical product-level design is [docs/architecture/object-detection-engine.md](architecture/object-detection-engine.md). The Phase A evidence and benchmark gate are defined in [docs/research/detection-phase-a-assessment.md](research/detection-phase-a-assessment.md). Read both before changing object-detection contracts, selecting model/runtime dependencies, implementing adapters, changing detection API behavior, or frontend result rendering.
 
 Non-negotiable design decisions:
 
