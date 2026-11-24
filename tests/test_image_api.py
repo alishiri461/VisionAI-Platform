@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 from fastapi.testclient import TestClient
-
 from visionai.api.v1.routes import images as image_routes
 from visionai.core.config import Settings
 from visionai.main import app
