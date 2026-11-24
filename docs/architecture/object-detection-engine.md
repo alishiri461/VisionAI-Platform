@@ -528,7 +528,11 @@ The following inputs are required before selecting a production model/runtime or
 
 Until these are supplied and evaluated, keep the architecture runtime-neutral and do not claim a specific model/runtime as selected.
 
-## 18. Explicit implementation status
+## 18. Phase A assessment reference
+
+The evidence-based audit of the current detector port, model/runtime candidate matrix, preliminary license screening, benchmark protocol, hard gates and required product/operations inputs are maintained in [Detection Phase A — Technical Assessment, Candidate Matrix and Benchmark Plan](../research/detection-phase-a-assessment.md). That assessment is required input before selecting a concrete model/runtime.
+
+## 19. Explicit implementation status
 
 As of this document's approval:
 
