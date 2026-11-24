@@ -26,4 +26,4 @@ This roadmap tracks intended delivery, not a claim that every listed capability 
 1. Verify image ingestion boundary tests and CI against the current PR head.
 2. Add reverse-proxy/server request-body limits and deployment-wide concurrency controls in the chosen deployment profile.
 3. Add observability for rejected uploads, processing wait time, decode failures, and processing latency.
-4. Execute Detection Phase A in [Object Detection Engine architecture](architecture/object-detection-engine.md): inspect the existing detector port, collect target hardware/workload/object-taxonomy requirements, complete model/license evaluation, and prepare a reproducible benchmark before selecting a runtime or implementing inference.
+4. Complete the remaining Phase A decision inputs in [Detection Phase A assessment](research/detection-phase-a-assessment.md): obtain target hardware, workload, object taxonomy and deployment/license posture; approve the evaluation dataset; then run the benchmark and issue a model/runtime selection ADR before implementing inference.
