@@ -1,7 +1,6 @@
 import math
 
 import pytest
-
 from visionai.domain.detection import Detection
 from visionai.domain.image import ColorOrder, ImageFrame
 
