@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 import pytest
-
 from visionai.application.use_cases.analyze_image import (
-    AnalyzeImageUseCase, InvalidImageContentError,
+    AnalyzeImageUseCase,
+    InvalidImageContentError,
 )
 from visionai.domain.image import ColorOrder, ImageFrame
 
