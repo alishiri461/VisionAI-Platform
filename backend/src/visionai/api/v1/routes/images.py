@@ -4,16 +4,18 @@ from typing import Annotated
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
-from visionai.application.use_cases.analyze_image import AnalyzeImageUseCase, InvalidImageContentError
+from visionai.application.use_cases.analyze_image import (
+    ImageLimitExceededError,
+    InvalidImageContentError,
+)
+from visionai.bootstrap import build_image_analysis_use_case
 from visionai.core.config import Settings, get_settings
-from visionai.infrastructure.opencv.processor import ImageLimitExceededError, OpenCvImageProcessor
 from visionai.schemas.image import ImageAnalysisResponse
 
 router = APIRouter()
 _ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
 _IMAGE_PROCESSING_SEMAPHORE = asyncio.Semaphore(2)
-_PROCESSOR = OpenCvImageProcessor()
-_USE_CASE = AnalyzeImageUseCase(decoder=_PROCESSOR, analyzer=_PROCESSOR)
+_USE_CASE = build_image_analysis_use_case()
 
 
 def _execute_analysis(content: bytes, settings: Settings, content_type: str) -> ImageAnalysisResponse:
