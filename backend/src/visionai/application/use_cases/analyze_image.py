@@ -8,6 +8,10 @@ class InvalidImageContentError(ValueError):
     """The payload is not a supported image matching its declared media type."""
 
 
+class ImageLimitExceededError(ValueError):
+    """Decoded image dimensions exceed the configured resource limits."""
+
+
 @dataclass(frozen=True, slots=True)
 class AnalyzeImageUseCase:
     decoder: ImageDecoder
