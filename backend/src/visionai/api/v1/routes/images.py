@@ -18,9 +18,14 @@ _IMAGE_PROCESSING_SEMAPHORE = asyncio.Semaphore(2)
 _USE_CASE = build_image_analysis_use_case()
 
 
-def _execute_analysis(content: bytes, settings: Settings, content_type: str) -> ImageAnalysisResponse:
+def _execute_analysis(
+    content: bytes,
+    settings: Settings,
+    content_type: str,
+) -> ImageAnalysisResponse:
     result = _USE_CASE.execute(
-        content, content_type=content_type,
+        content,
+        content_type=content_type,
         max_width=settings.max_image_width,
         max_height=settings.max_image_height,
         max_pixels=settings.max_image_pixels,
