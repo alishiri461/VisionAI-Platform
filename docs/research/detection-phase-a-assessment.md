@@ -361,8 +361,8 @@ TensorRT remains an optional optimization track after a baseline has been measur
 The following values remain unknown and must not be inferred:
 
 - Whether this computer is the final production host, a development workstation, or a benchmark-only machine.
-- Whether CUDA Toolkit and cuDNN are installed; if so, their exact versions. `nvidia-smi` alone does not establish this.
-- Free SSD capacity and storage budget for model artifacts, datasets and benchmark outputs.
+- Whether CUDA Toolkit and cuDNN are installed; if so, their exact versions. `nvidia-smi` alone does not establish this. `where nvcc` returned `INFO: Could not find files for the given pattern(s).`; this establishes only that `nvcc` was not found through the current CMD PATH, not that every CUDA runtime component is absent.
+- Free SSD capacity reported by `wmic logicaldisk` on 2026-11-24: C: 392,483,848,192 bytes free (approximately 365.4 GiB); E: 726,165,950,464 bytes free (approximately 676.1 GiB). These are point-in-time values; filesystem allocation and future usage can change them.
 - Whether deployment is on-premises, cloud, edge or mixed.
 - Typical and maximum input image width/height.
 - Expected concurrent requests and peak requests/second.
