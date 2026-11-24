@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Analysis = {
   width: number; height: number; channels: number; mean_grayscale: number;
@@ -13,14 +13,20 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (!preview) return;
+    return () => URL.revokeObjectURL(preview);
+  }, [preview]);
+
   function chooseFile(next?: File) {
-    if (preview) URL.revokeObjectURL(preview);
-    setFile(next ?? null); setPreview(next ? URL.createObjectURL(next) : null);
-    setAnalysis(null); setError(null);
+    setFile(next ?? null);
+    setPreview(next ? URL.createObjectURL(next) : null);
+    setAnalysis(null);
+    setError(null);
   }
 
   async function analyze() {
-    if (!file) return;
+    if (!file || busy) return;
     setBusy(true); setError(null); setAnalysis(null);
     try {
       const body = new FormData(); body.append("file", file);
