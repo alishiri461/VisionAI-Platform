@@ -430,3 +430,36 @@ Operational decision:
 - Do not install or upgrade CUDA, cuDNN, PyTorch or ONNX Runtime yet.
 - Before selecting an installation matrix, identify the active Python executable/environment and inspect the installed package location, then check the exact supported Windows/Python/CUDA/cuDNN combinations from the official release compatibility matrices.
 - Keep a CPU reference benchmark available; GPU benchmarking remains blocked until a compatible GPU-enabled runtime is deliberately installed and verified.
+
+
+### 11.5 Python executable and installed package location (2026-11-24)
+
+The user supplied these additional Windows CMD results:
+
+```text
+where python
+C:\Users\14033874\AppData\Local\Programs\Python\Python310\python.exe
+
+python -c "import sys; print(sys.executable)"
+C:\Users\14033874\AppData\Local\Programs\Python\Python310\python.exe
+
+python -m pip show torch
+Name: torch
+Version: 2.14.1
+Location: c:\users\14033874\appdata\local\programs\python\python310\lib\site-packages
+Requires: filelock, fsspec, jinja2, networkx, setuptools, sympy, typing-extensions
+```
+
+Confirmed interpretation:
+
+- The current CMD `python` command resolves to the per-user CPython 3.10 installation at `C:\Users\14033874\AppData\Local\Programs\Python\Python310\python.exe`.
+- `sys.executable` confirms that the same interpreter imports PyTorch.
+- `pip show torch` confirms the package location under that interpreter's `Lib\site-packages`; the earlier `2.14.1+cpu` runtime string and `torch.version.cuda is None` establish this installation is CPU-only.
+- The pip metadata reports the distribution version as `2.14.1`; this does not contradict the runtime local build suffix `+cpu`.
+- No evidence in these commands establishes the presence or absence of CUDA Toolkit, cuDNN, another Python installation, or a separate virtual environment.
+
+Next diagnostic gate:
+
+- Before changing packages, capture `python -m pip --version`, `python -m pip list` (or targeted package checks), and `where nvcc` / CUDA-related environment variables only if needed to identify the installed stack.
+- Then verify exact Windows, Python, CUDA and cuDNN support in the official PyTorch and ONNX Runtime release documentation for the intended pinned versions.
+- Do not infer compatibility from the driver's `nvidia-smi` CUDA compatibility label alone, and do not modify the base Python environment until the version matrix and deployment role are approved.
