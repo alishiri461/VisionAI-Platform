@@ -8,6 +8,7 @@ A modular computer-vision web platform built with Python, FastAPI, OpenCV and Re
 - Master engineering prompt: [docs/MASTER_PROMPT.md](docs/MASTER_PROMPT.md)
 - Architecture: [docs/architecture/overview.md](docs/architecture/overview.md)
 - Object Detection Engine product architecture: [docs/architecture/object-detection-engine.md](docs/architecture/object-detection-engine.md)
+- Detection Phase A technical assessment and benchmark plan: [docs/research/detection-phase-a-assessment.md](docs/research/detection-phase-a-assessment.md)
 - Delivery roadmap: [docs/roadmap.md](docs/roadmap.md)
 
 All work must follow the master prompt's evidence-based workflow, branch protections, security/resource limits, quality gates, and definition of done.
