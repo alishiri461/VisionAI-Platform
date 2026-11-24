@@ -293,3 +293,25 @@ A change is done only when all applicable items are true:
 For each new user request, follow this instruction:
 
 > First inspect the live repository and current PR state. Do not assume the previous summary is still current. Explain the observed baseline and identify the smallest safe implementation plan. Make changes only on a non-main branch, preserving existing contracts and unrelated work. Implement only the requested, evidence-backed scope. Add regression tests and update documentation. Run available validation or inspect exact GitHub Actions results for the final commit. Never invent successful tests, model capabilities, performance numbers, or production readiness. Do not merge or deploy unless explicitly authorized. Finish with a concise, verifiable engineering report and the next dependency-aware step.
+
+
+## 15. Object Detection Engine — approved product architecture
+
+The canonical product-level design is [docs/architecture/object-detection-engine.md](architecture/object-detection-engine.md). Read it before changing object-detection contracts, model adapters, runtime dependencies, detection API behavior, or frontend result rendering.
+
+Non-negotiable design decisions:
+
+- Keep detection inside the modular monolith; do not extract a microservice without measured operational justification.
+- Keep API/application/domain contracts independent of YOLO, PyTorch, ONNX Runtime, OpenVINO, TensorRT, and vendor-specific result objects.
+- Distinguish model family, artifact format, inference runtime, execution provider/device, and VisionAI adapter. YOLO is not itself an inference runtime.
+- Return boxes in original-image pixel coordinates with top-left origin, documented half-open bounds, deterministic ordering, finite confidence values, and stable class metadata.
+- Reuse the hardened image-ingestion path. Detection inference requires its own bounded concurrency/admission policy; the image-analysis semaphore is not evidence of safe inference capacity.
+- Load immutable, checksum-verified, license-reviewed artifacts through an explicit lifecycle manager. Do not load weights per request, accept arbitrary client paths/URLs, or commit model weights to Git.
+- Model lifecycle, readiness, warm-up, draining, cleanup, overload behavior and timeout semantics must be explicit and tested.
+- Keep inference off the ASGI event loop. Do not assume GPU sessions are thread-safe or that process-local limits provide deployment-wide capacity control.
+- Preserve POST /api/v1/images/analyze. The target detection endpoint is POST /api/v1/detections with a separate response contract.
+- A no-detection result is a successful response, not an error.
+- Do not invent model accuracy, latency, throughput, hardware compatibility, or license suitability. Select a runtime only after target hardware/workload review and reproducible benchmark.
+- Do not mark detection implemented because a protocol, manifest example, placeholder, mock response, or UI overlay exists. Require a concrete adapter, real artifact, integration tests, quality evaluation and target-hardware evidence.
+
+The approved architecture is a design specification, not an implementation claim. At the time of approval, concrete inference, model registry/lifecycle, detection API and real detection UI remain planned.
