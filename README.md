@@ -64,6 +64,6 @@ cd frontend
 npm run build
 ```
 
-Configuration examples: `backend/.env.example` and `frontend/.env.example`.
+Configuration examples: `backend/.env.example` and `frontend/.env.example`. Image limits default to 8000 px per dimension and 12,000,000 total pixels; override with `VISIONAI_MAX_IMAGE_WIDTH`, `VISIONAI_MAX_IMAGE_HEIGHT`, and `VISIONAI_MAX_IMAGE_PIXELS`.
 
 No license has been selected. Until one is added, treat the repository as all-rights-reserved.
