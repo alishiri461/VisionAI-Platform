@@ -44,6 +44,15 @@ def test_image_api_rejects_decoded_dimensions_over_limit(monkeypatch) -> None:
     assert response.status_code == 413
 
 
+def test_image_api_rejects_malformed_image_bytes(monkeypatch) -> None:
+    monkeypatch.setattr(image_routes, "get_settings", Settings)
+    response = TestClient(app).post(
+        "/api/v1/images/analyze",
+        files={"file": ("broken.png", b"not-a-valid-image", "image/png")},
+    )
+    assert response.status_code == 422
+
+
 def test_image_api_rejects_unsupported_declared_media_type(monkeypatch) -> None:
     monkeypatch.setattr(image_routes, "get_settings", Settings)
     response = TestClient(app).post(
